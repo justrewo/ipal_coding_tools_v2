@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-navbar color="dark" hideBackButton="false">
+    <ion-title>
+      诚思科技
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div style="width: 100%;height: 100%;background-color: red;display: flex;flex-direction: column">
+    <div style="height: 0px;width: 100%;background-color: #dd19a4">
+    </div>
+
+    <div style="height: 100px;width: 100%;flex-grow: 100;background-color: burlywood;display: flex">
+      <!-- 关节名称 -->
+      <div style="width: 120px;height: 100%">
+        <div style="height: 40px"></div>
+        <div *ngFor="let item of jointsLable" style="height: 30px;display: flex;justify-content: center;align-items: center">
+          <span>{{item.alias}}</span>
+        </div>
+      </div>
+
+      <div style="width: 100px;height: 100%;flex-grow: 100;">
+        <ion-scroll scrollX="true" overflow-scroll=“false” style="width: 100%;height: 100%;background-color: transparent;" >
+          <div style="width: 24000px;height: 800px;background-color: transparent;display: flex;flex-direction: column">
+            <div style="height: 40px;width: 100%;display: flex">
+              <div *ngFor="let b_index of badgetList" style="width: 100px;height: 100%;display: flex;align-items: center;justify-content: center">
+                <ion-badge item-end>{{b_index}}</ion-badge>
+
+                <!--
+                <button ion-button clear>
+                  <ion-icon name="ios-remove"></ion-icon>
+                </button>
+
+                -->
+
+              </div>
+
+
+            </div>
+
+            <div style="height: 100px;width: 100%;flex-grow: 100;display: flex">
+              <div *ngFor="let keyFrame of actList" style="width: 100px;background-color: transparent;margin-right: 5px">
+                <div *ngFor="let lable_item of jointsLable" style="height: 30px;display: flex;justify-content: center;align-items: center">
+                  <span>{{getJointDisplayLabel(lable_item.jointID,keyFrame)}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ion-scroll>
+      </div>
+    </div>
+   </div>
+
+
+</ion-content>

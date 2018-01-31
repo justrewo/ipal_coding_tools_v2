@@ -1,0 +1,14 @@
+<div no-padding no-margin style="width: 100%;height: 100%;position: relative">
+  <div [style.visibility]= "isLoading()?'visible':'hidden'" style="position: absolute;width: 100%;height: 100%;left: 0px;right: 0px;top: 0px;bottom: 0px">
+    <div  style="height: 100%;width: 100%;background-color:transparent;display: flex;justify-content: center;align-items: center" >
+      <ion-spinner color="danger" name="crescent"></ion-spinner>
+    </div>
+  </div>
+
+  <div [style.visibility]= "isLoaded()?'visible':'hidden'" style="width: 100%;height: 100%;background-color: transparent">
+    <section no-margin no-padding id="homeRobotContainer" style="width: 100%;height: 100%">
+      <mars-model-viewer [mars3DContext]="three3DContext" [orbitEnable]="true">
+      </mars-model-viewer>
+    </section>
+  </div>
+</div>

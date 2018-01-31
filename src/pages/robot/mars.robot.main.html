@@ -1,0 +1,85 @@
+<ion-header>
+</ion-header>
+<ion-content style="background-color:#0F485D" >
+  <div style="width: 100%;height: 100%;display: flex;flex-direction: column">
+    <div style="width: 100%;background-color: transparent">
+      <div no-border no-margin no-padding style="background-color: transparent;color: white;display: flex">
+        <div no-border no-margin no-padding style="width: 100%;background-color: transparent">
+          <ion-select [(ngModel)] = "action" okText="确定" cancelText="取消"
+                      interface="popover"
+                      (ionChange)="onSelectChange()" [disabled]="!isJointSelectEnable()">
+            <ion-option value="1">头部左右摇动</ion-option>
+            <ion-option value="2">头部俯视&仰视</ion-option>
+            <ion-option value="3">弯腰&后仰</ion-option>
+            <ion-option value="4">左臂前后旋转</ion-option>
+            <ion-option value="5">右臂前后旋转</ion-option>
+            <ion-option value="6">左臂张开与收起</ion-option>
+            <ion-option value="7">右臂张开与收起</ion-option>
+            <ion-option value="8">左肘关节旋转</ion-option>
+            <ion-option value="9">右肘关节旋转</ion-option>
+            <ion-option value="10">左肘关节弯曲</ion-option>
+            <ion-option value="11">右肘关节弯曲</ion-option>
+            <ion-option value="12">左手掌旋转</ion-option>
+            <ion-option value="13">右手掌旋转</ion-option>
+            <ion-option value="14">底盘旋转</ion-option>
+          </ion-select>
+        </div>
+      </div>
+
+      <div no-border no-margin no-padding style="background-color: #dd6b5c">
+        <ion-range [(min)]=minAngle [(max)]=maxAngle [(ngModel)]="targetAngle" (ionChange)="onValueChange($event)"
+                   color="secondary" pin=true [disabled]="!isRangeEnable()">
+          <ion-label range-left style="color: white">{{minAngle}}</ion-label>
+          <ion-label range-right style="color: white">{{maxAngle}}</ion-label>
+        </ion-range>
+      </div>
+    </div>
+
+    <div style="width: 100%;flex-grow: 100;height: 200px; background-color: transparent">
+      <div no-border no-margin style="position: relative;width: 100%;height: 100%">
+        <div style="display: flex;justify-content: center;align-items: center;width: 100%;height: 100%;background-color: transparent">
+          <div style="width: 100%;background-color: transparent;position: absolute;top: 0px;bottom: 0px;left: 0px;right: 0px">
+            <div no-padding no-margin style="width: 100%; height: 100%">
+              <div style="width: 100%;height: 100%;background-color: transparent;">
+                <section no-margin no-padding style="width: 100%;height: 100%;background-color: transparent">
+                  <mars-robot-viewer (onPick)="onPickObject($event)"
+                                     (onJointRotate)="onJointRotate($event)"
+                                     (onRobotModelReady)="onRobotModelReady($event)"
+                                     (onFrameActProgress)="onFrameActProgress($event)"
+                                     (onSimulateStop)="onSimulatorStop()">
+                  </mars-robot-viewer>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="width: 100%;height: 60px;background-color: burlywood;z-index: 10000;display: flex;align-items: center;justify-content: space-around" (click)="fuckClick()">
+      <button ion-button (click)="modelButtonAction()">
+        <ion-icon [name]="getIconForModeButton()"></ion-icon>
+      </button>
+
+      <button ion-button [disabled]="!isSimulateButtonEnable()" (click)="emulatorButtonAction()">
+        <ion-icon name="ios-body"></ion-icon>
+      </button>
+
+      <button ion-button [disabled]="!isFilmButtonEnable()" (click)="filmButtonAction()">
+        <ion-icon name="ios-film"></ion-icon>
+        <div style="padding-left: 10px">
+          <ion-badge color="secondary" item-end>{{getBadget()}}</ion-badge>
+        </div>
+      </button>
+
+      <button ion-button [disabled]="!isAcceptButtonEnable()" (click)="acceptButtonAction()">
+        <ion-icon name="md-checkmark"></ion-icon>
+      </button>
+
+      <button ion-button [disabled]="!isResetEnable()" (click)="resetAction()" >
+        <ion-icon name="ios-refresh"></ion-icon>
+      </button>
+
+     </div>
+  </div>
+
+</ion-content>

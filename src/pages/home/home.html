@@ -1,8 +1,51 @@
 <ion-content padding>
- <div no-margin no-padding style="display: flex;flex-direction: row;width: 100%;height: 100%">
+  <style>
+    .blkToolCat {
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+
+    }
+    .blkDiv {
+      flex-grow: 1;
+      flex-shrink: 1;
+    }
+  </style>
+  <div no-margin no-padding style="display: flex;flex-direction: row;width: 100%;height: 100%">
    <!-- blockly area -->
    <div no-margin no-padding style="display: flex;height: 100%;width: 70%;background-color: #2ec95c">
-   </div>
+    <div style="flex-direction:column; flex-grow: 0; height: 100%; background: #888888; display: flex;" id="blocklyCategory">
+      <div class="blkDiv">
+        <input class="blkToolCat" type="image" src="assets/imgs/category/tool_head.png" id="head" (click)="setToolboxCategory(0)"/>
+      </div>
+      <div class="blkDiv">
+        <input class="blkToolCat" type="image" src="assets/imgs/category/tool_left_arm.png" id="left_arm" (click)="setToolboxCategory(1)"/>
+      </div>
+      <div class="blkDiv">
+        <input class="blkToolCat" type="image" src="assets/imgs/category/tool_right_arm.png" id="right_arm" (click)="setToolboxCategory(2)"/>
+      </div>
+      <div class="blkDiv">
+        <input class="blkToolCat" type="image" src="assets/imgs/category/tool_wheel.png" id="wheel" (click)="setToolboxCategory(3)"/>
+      </div>
+      <div class="blkDiv">
+        <input class="blkToolCat" type="image" src="assets/imgs/category/tool_voice.png" id="voice" (click)="setToolboxCategory(4)"/>
+      </div>
+      <div class="blkDiv">
+        <input class="blkToolCat" type="image" src="assets/imgs/category/tool_emotion.png" id="emotion" (click)="setToolboxCategory(5)"/>
+      </div>
+      <div class="blkDiv">
+        <input class="blkToolCat" type="image" src="assets/imgs/category/tool_action.png" id="action" (click)="setToolboxCategory(6)"/>
+      </div>
+      <div class="blkDiv">
+        <input class="blkToolCat" type="image" src="assets/imgs/category/tool_control.png" id="control" (click)="setToolboxCategory(7)"/>
+      </div>
+    </div>
+    <div style=" flex-grow: 100;width: 100%;background-color: white; position: relative;overflow: hidden">
+      <div  style="position: absolute;left: 0px;right: 0px;bottom: 0px;top: 0px; background-color:transparent;z-index: 1;"  id="blocklyDiv">
+      </div>
+    </div>
+    <div #blocklyMenu style="visibility: hidden"></div>
+  </div>
 
    <div no-margin no-padding style="display: flex;height: 100%;flex-grow: 2;background-color: #e93a3a">
      <div no-margin no-padding style="display: flex;flex-direction: column;width: 100%;height: 100%">
@@ -27,5 +70,5 @@
        </div>
      </div>
    </div>
- </div>
+  </div>
 </ion-content>

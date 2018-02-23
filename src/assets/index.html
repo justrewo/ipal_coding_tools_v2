@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>iPalProgrammer</title>
+    <script src="./js/jquery-3.1.1.min.js"></script>
+    <script src="./goog/blockly_compressed.js"></script>
+    <script src="./goog/blocks_compressed.js"></script>
+    <script src="./goog/javascript_compressed.js"></script>
+    <script src="./goog/msg/zh-hans.js"></script>
+    <script src="./defined_blocks.js"></script>
+    <script src="./generators.js"></script>
+    <script src="./feild_imagebutton.js"></script>
+    <script src="./soaros_upload.js"></script>
+    <script src="./soaros_recorder.js"></script>
+    <script src="./soaros_feild_angle.js"></script>
+    <script src="./soaros_xml.js"></script>
+
+    <style>
+        body {
+            background-color: #fff;
+            font-family: sans-serif;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            font-weight: normal;
+            font-size: 140%;
+        }
+        #blocklyDiv {
+            margin: 0;
+            padding: 0;
+            visibility: hidden;
+            position:absolute;
+        }
+        #blocklyCategory {
+            margin: 0;
+            padding: 0;
+            visibility: hidden;
+            position:absolute;
+        }
+        #blocklyTopMenu {
+            margin: 0;
+            padding: 0;
+            visibility: hidden;
+            position:absolute;
+            z-index: 5;
+        }
+        .blkToolCat {
+            height: 100%;
+            background: white;
+        }
+        .blkTopMenuItem {
+            height: 100%;
+        }
+        #optionMenu {
+            width: 200px;
+            height: 120px;
+            line-height: 30px;
+            text-align: center;
+            background-color: #E4E4E4;
+            position:absolute;
+        }
+
+        #ninePatch {
+            height: 300px;
+            width: 300px;
+            border: 5px solid #999;
+            left:50%;
+            top:50%;
+            margin-top:-150px;
+            margin-left:-150px;
+            z-index: 50;
+            display: none;
+            position: absolute;
+            background-color: #FFF;
+        }
+        #shadeCover {
+            background-color:#000;
+            position:absolute;
+            z-index:49;
+            display:none;
+            width:100%;
+            height:100%;
+            opacity:0.6;
+            filter: alpha(opacity=60);
+            -moz-opacity: 0.6;
+            margin: 0;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        #trashArea {
+            height: 80px;
+            width: 60px;
+            left: 95%;
+            top: 90%;
+            z-index: 50;
+            display: block;
+            position: absolute;
+        }
+
+    </style>
+    <script type="text/javascript">
+        function setShownOrHidden(obj) {
+            if (obj.style.display == "block") {
+                obj.style.display = 'none';
+            }
+            else {
+                obj.style.display = 'block';
+            }
+        }
+    </script>
+
+    <script>
+        var patch = document.getElementById('ninePatch');
+        var shade = document.getElementById('shadeCover');
+
+        function setAndroidBackPressed() {
+            if (window.android) {
+                window.android.setNinePatchDivVisibility(patch.style.display == "block" && shade.style.display == "block");
+            }
+        }
+
+        function setNinePatchGone() {
+            patch.style.display = 'none';
+            shade.style.display = 'none';
+        }
+    </script>
+
+    <script>
+        function setTemplate(position) {
+            switch (position) {
+                case '0':
+                    document.getElementById('optionMenuOne').onclick();
+                    break;
+                case '1':
+                    document.getElementById('optionMenuTwo').onclick();
+                    break;
+                case '2':
+                    document.getElementById('optionMenuThree').onclick();
+                    break;
+                case '3':
+                    document.getElementById('optionMenuFour').onclick();
+                    break;
+                default:
+                    break;
+            }
+        }
+    </script>
+</head>
+<body onload="pageLayout()" onresize="pageLayout()">
+<div id="blocklyCategory">
+    <input class="blkToolCat" type="image" src="./images/category/arm.png" id="arm"
+           onclick="setToolboxCategory(this)"/>
+    <input class="blkToolCat" type="image" src="./images/category/leg.png" id="leg"
+           onclick="setToolboxCategory(this)"/>
+    <input class="blkToolCat" type="image" src="./images/category/foot.png" id="foot"
+           onclick="setToolboxCategory(this)"/>
+    <input class="blkToolCat" type="image" src="./images/category/tool_voice.png" id="voice"
+           onclick="setToolboxCategory(this)"/>
+    <input class="blkToolCat" type="image" src="./images/category/tool_action.png" id="action"
+           onclick="setToolboxCategory(this)"/>
+    <input class="blkToolCat" type="image" src="./images/category/tool_action.png" id="light"
+           onclick="setToolboxCategory(this)"/>
+    <input class="blkToolCat" type="image" src="./images/category/tool_control.png" id="control"
+           onclick="setToolboxCategory(this)"/>
+
+</div>
+<script>
+    //document.getElementById('arm').style.background = "#E4E4E4";
+</script>
+<div id="blocklyTopMenu">
+    <input class="blkTopMenuItem" type="image" id="topMenuSave" src="./images/menu/save_workspace.png"
+           onclick="onClickTopMenuItem(this)"/>
+    <input class="blkTopMenuItem" type="image" id="topMenuLoad" src="./images/menu/load_workspace.png"
+           onclick="onClickTopMenuItem(this)"/>
+    <input class="blkTopMenuItem" type="image" id="topMenuPlay" src="./images/menu/play.png"
+           onclick="onClickTopMenuItem(this)"/>
+    <input class="blkTopMenuItem" type="image" id="topMenuMain" src="./images/menu/menu.png"
+           onclick="showTemplatesMenu()"/>
+    <input class="blkTopMenuItem" type="image" id="topMenuSubFuncSave" src="./images/menu/save_sub_func.png"
+           onclick="onClickTopMenuItem(this)"/>
+    <input class="blkTopMenuItem" type="image" id="topMenuSubFuncLoad" src="./images/menu/load_sub_func.png"
+           onclick="onClickTopMenuItem(this)"/>
+</div>
+<div id="blocklyDiv"></div>
+
+<div style="visibility: hidden">
+    <xml id="arm___" style="display: none">
+        <block type="left_arm_rotate"></block>
+        <block type="right_arm_rotate"></block>
+        <block type="left_arm_roll"></block>
+        <block type="right_arm_roll"></block>
+    </xml>
+    <xml id="leg___" style="display: none">
+        <block type="left_leg"></block>
+        <block type="right_leg"></block>
+    </xml>
+    <xml id="foot___" style="display: none">
+        <block type="left_foot"></block>
+        <block type="right_foot"></block>
+    </xml>
+    <xml id="voice___" style="display: none">
+        <block type="background_music"></block>
+        <block type="sound"></block>
+        <block type="speak_record"></block>
+    </xml>
+    <xml id="action___" style="display: none">
+        <block type="action_handshake"></block>
+        <block type="action_cheer"></block>
+        <block type="action_embrace"></block>
+        <block type="action_dance"></block>
+    </xml>
+    <xml id="light___" style="display: none">
+        <block type="light_on_s_t"></block>
+        <block type="light_on_s"></block>
+        <block type="light_on_c_t"></block>
+        <block type="light_on_c"></block>
+        <block type="light_off"></block>
+    </xml>
+    <xml id="control___" style="display: none">
+        <block type="control_loop"></block>
+        <block type="control_simultaneously"></block>
+
+        <block type="controls_if"></block>
+        <block type="logic_compare"></block>
+        <block type="logic_operation"></block>
+        <block type="logic_negate"></block>
+        <block type="logic_boolean"></block>
+
+        <block type="math_number"></block>
+        <block type="math_arithmetic">
+            <value name="A">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
+            <value name="B">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
+        </block>
+
+
+        <block type="control_variables_get"></block>
+        <block type="control_variables_set">
+            <value name="VALUE">
+                <shadow type="math_number"></shadow>
+            </value>
+        </block>
+
+        <block type="control_functions"></block>
+    </xml>
+
+    <xml id="startBlocks" style="display: none">
+        <block id="startblock" type="robot_control_start" deletable="false"></block>
+    </xml>
+
+</div>
+
+<div id="optionMenu" style="display:none">
+    <a id="optionMenuOne" onclick="getTemplate(0)">手臂模板</a><br>
+    <a id="optionMenuTwo" onclick="getTemplate(1)">动作模板</a><br>
+    <a id="optionMenuThree" onclick="getTemplate(2)">表情模板</a><br>
+    <a id="optionMenuFour" onclick="getTemplate(3)">声音模板</a><br>
+</div>
+
+
+<div id="shadeCover" onclick="closeNinePatchDialog()"></div>
+<div id="ninePatch">
+    <img id="workspace1" src="./images/menu/play.png" width="95" height="95" onclick="setWorkspaceSaved(this)" style="cursor: pointer">
+    <img id="workspace2" src="./images/menu/play.png" width="95" height="95" onclick="setWorkspaceSaved(this)">
+    <img id="workspace3" src="./images/menu/play.png" width="95" height="95" onclick="setWorkspaceSaved(this)"><br>
+    <img id="workspace4" src="./images/menu/play.png" width="95" height="95" onclick="setWorkspaceSaved(this)">
+    <img id="workspace5" src="./images/menu/play.png" width="95" height="95" onclick="setWorkspaceSaved(this)">
+    <img id="workspace6" src="./images/menu/play.png" width="95" height="95" onclick="setWorkspaceSaved(this)"><br>
+    <img id="workspace7" src="./images/menu/play.png" width="95" height="95" onclick="setWorkspaceSaved(this)">
+    <img id="workspace8" src="./images/menu/play.png" width="95" height="95" onclick="setWorkspaceSaved(this)">
+    <img id="workspace9" src="./images/menu/play.png" width="95" height="95" onclick="setWorkspaceSaved(this)">
+</div>
+<div id="trashArea" onclick="clearWorkspace()"></div>
+
+<script language="javascript">
+    var workspace = null;
+
+    var isSave = true;
+
+    var patch = document.getElementById('ninePatch');
+    var shade = document.getElementById('shadeCover');
+
+    function seralizePrograme(maincode)
+    {
+        //var index = maincode.indexOf("subfunc");
+        //var tmp = maincode;
+        var programeCode = 'function main() {\n' + maincode + '}\r\n';
+
+        var length = localStorage.length;
+        var index = 0;
+        while(index < length)
+        {
+            var key = localStorage.key(index);
+            if (key.indexOf("subfunc") == 0)
+            {
+                var xmltext = localStorage.getItem(key);
+                var objects = JSON.parse(localStorage.getItem(key));
+                var funname = objects[0];
+                var xmltext = objects[1];
+                var xml = Blockly.Xml.textToDom(xmltext);
+
+                    // Create a headless workspace.
+                var workspace = new Blockly.Workspace();
+                Blockly.Xml.domToWorkspace(xml, workspace);
+                var code = Blockly.JavaScript.workspaceToCode(workspace);
+
+                if (code.indexOf("variable") >= 0) {
+                    programeCode += 'function ' + funname + '() {\n' + 'var variable1, variable2, variable3, variable4, variable5,variable6, variable7, variable8, variable9, variable10;\n' + code + '}\r\n';
+                }
+                else {
+                    programeCode += 'function ' + funname + '() {\n' + code + '}\r\n';
+                }
+            }
+            index++;
+        }
+        /*while(index >= 0)
+         {
+         tmp = tmp.substring(index);
+         var len = tmp.indexOf("(");
+         var funcname = tmp.substring(0, len);
+         var xmltext = localStorage.getItem(funcname);
+
+         var xml = Blockly.Xml.textToDom(xmltext);
+
+         // Create a headless workspace.
+         var workspace = new Blockly.Workspace();
+         Blockly.Xml.domToWorkspace(xml, workspace);
+         var code = Blockly.JavaScript.workspaceToCode(workspace);
+
+         programeCode += 'function ' + funcname + '() {\r\n' + code + '}\r\n';
+         tmp = tmp.substring(len);
+
+         index = tmp.indexOf("subfunc");
+
+         //        var block = Blockly.JavaScript.domToBlock(dom);
+
+         //        var code = blockly.JavaScript.blockToCode(block);
+         }*/
+
+        return programeCode;
+    }
+
+    function showResonseContent(res, e) {
+        if (window.android)
+        {
+            window.android.showToast(res);
+
+        }else {
+            alert(res);
+        }
+    }
+
+    function genCodeAndRun() {
+        var code = Blockly.JavaScript.workspaceToCode(workspace);
+        var programe = seralizePrograme(code);
+        var server_ip;
+        if (window.android)
+        {
+            window.android.showToast(programe);
+
+        }else {
+            alert(programe);
+        }
+
+        if (window.android) {
+            server_ip = window.android.getIP();
+        } else {
+            server_ip = "localhost";
+        }
+        uploadDataToServer("http://" + server_ip + ":3000/upload", programe, "runcode.rs", "text/plain", showResonseContent, null);
+    }
+
+    function setToolboxCategory(btn) {
+        workspace.updateToolbox(document.getElementById(btn.id + "___" ));
+        setToolboxBackground();
+        btn.style.background = "#E4E4E4"
+    }
+
+    function setToolboxBackground() {
+        document.getElementById('arm').style.background = "white";
+        document.getElementById('leg').style.background = "white";
+        document.getElementById('foot').style.background = "white";
+        document.getElementById('voice').style.background = "white";
+        document.getElementById('action').style.background = "white";
+        document.getElementById('control').style.background = "white";
+    }
+
+    function onClickTopMenuItem(btn) {
+        switch (btn.id) {
+            case 'topMenuPlay':
+                genCodeAndRun();
+                break;
+            case 'topMenuMain':
+                setShownOrHidden(document.getElementById("optionMenu"));
+                break;
+            case 'topMenuSave':
+                patch.style.display = 'block';
+                shade.style.display = 'block';
+                isSave = true;
+                tellWorkspaceHasContent();
+                break;
+            case 'topMenuLoad':
+                patch.style.display = 'block';
+                shade.style.display = 'block';
+                isSave = false;
+                tellWorkspaceHasContent();
+                break;
+            case 'topMenuSubFuncSave':
+                var code = getSubCodeBlock();
+                if (code != null) {
+                    var value = prompt('请输入保存的子函数名：', '');
+                    if (value != null) {
+                        if (value == '') {
+                            if (window.android) {
+                                window.android.showToast("输入不能为空！");
+                            }
+                            else {
+                                alert("输入不能为空！");
+                            }
+                        }
+                        else {
+                            var hasName = false;
+                            for (var j = 0; j < localStorage.length; j++) {
+                                var key1 = localStorage.key(j);
+                                if (key1.indexOf("subfunc") == 0) {
+                                    var objects1 = JSON.parse(localStorage[key1]);
+                                    var name = objects1[0];
+                                    if (name == value) {
+                                        hasName = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!hasName) {
+                                var objects = new Array(2);
+                                objects[0] = value;
+                                objects[1] = code;
+                                localStorage[countSubFunctionId()] = JSON.stringify(objects);
+                                if (window.android) {
+                                    window.android.showToast("子函数保存成功");
+                                }
+                                else {
+                                    alert("子函数保存成功");
+                                }
+                            }
+                            else {
+                                if (window.android) {
+                                    window.android.showToast("子函数名字已存在，请重新输入！");
+                                }
+                                else {
+                                    alert("子函数名字已存在，请重新输入！");
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (window.android) {
+                        window.android.showToast("子函数为空");
+                    }
+                    else {
+                        alert("子函数为空");
+                    }
+                }
+                break;
+            case 'topMenuSubFuncLoad':
+                var hasSub = false;
+                for (var i = 0; i < localStorage.length; i++) {
+                    var key = localStorage.key(i);
+                    console.log(key);
+                    var index = key.indexOf("subfunc");
+                    if (index == 0) {
+                        hasSub = true;
+                        break;
+                    }
+                }
+                if (!hasSub) {
+                    if (window.android) {
+                        window.android.showToast("没有子函数");
+                    }
+                    else {
+                        alert("没有子函数");
+                    }
+                }
+                else {
+                    loadSubFunctionSelector();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    function loadSubFunctionSelector() {
+        var value = prompt('请输入需要加载的子函数名：', '');
+        if (value != null) {
+            if (value == '') {
+                if (window.android) {
+                    window.android.showToast("输入不能为空！");
+                }
+                else {
+                    alert("输入不能为空！");
+                }
+                loadSubFunctionSelector();
+            }
+            else {
+                var hasMatch = false;
+                for (var i = 0; i < localStorage.length; i++) {
+                    var key = localStorage.key(i);
+                    if (key.indexOf("subfunc") == 0) {
+                        var objects = JSON.parse(localStorage[key]);
+                        var name = objects[0];
+                        if (value == name) {
+                            hasMatch = true;
+                            var text = objects[1];
+                            if (text != null) {
+                                var xml = Blockly.Xml.textToDom(text);
+                                Blockly.Xml.domToWorkspace(xml, workspace);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!hasMatch) {
+                    if (window.android) {
+                        window.android.showToast("没有匹配的子函数");
+                    }
+                    else {
+                        alert("没有匹配的子函数");
+                    }
+                }
+            }
+        }
+    }
+
+    function tellWorkspaceHasContent() {
+        for (var i = 0; i < patch.childElementCount - 2; i++) {
+            var id = "workspace" + (i + 1);
+            if(localStorage.getItem(id) != null) {
+                document.getElementById(id).src = "./images/menu/menu.png";
+            }
+            else {
+                document.getElementById(id).src = "./images/menu/tmp_none.png";
+            }
+        }
+    }
+
+    function closeNinePatchDialog() {
+        patch.style.display='none';
+        shade.style.display='none'
+    }
+
+    function setWorkspaceSaved(img) {
+        if(isSave) {
+            // Save
+            var xmlDom = Blockly.Xml.workspaceToDom(workspace);
+            var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
+            localStorage.setItem(img.id, xmlText);
+            if(window.android) {
+                window.android.showToast(img.id + "保存成功");
+            }
+            else {
+                alert(img.id + "保存成功");
+            }
+        }
+        else {
+            // Load
+            var text = localStorage.getItem(img.id);
+            if(text != null) {
+                var xml = Blockly.Xml.textToDom(text);
+                workspace.clear();
+                Blockly.Xml.domToWorkspace(xml, workspace);
+                if(window.android) {
+                    window.android.showToast(img.id + "加载成功");
+                }
+                else {
+                    alert(img.id + "加载成功");
+                }
+            }
+            else {
+                if(window.android) {
+                    window.android.showToast("无存档");
+                }
+                else {
+                    alert("无存档");
+                }
+            }
+        }
+        closeNinePatchDialog();
+    }
+
+   function pageLayout() {
+        var winWidth = window.innerWidth, winHeight = window.innerHeight;
+        if(!winWidth)
+            winWidth  = document.body.clientWidth;
+        if(winHeight)
+            winHeight = document.body.clientHeight;
+
+        var divMenuL1    = document.getElementById('blocklyCategory');
+        var divWorkspace = document.getElementById('blocklyDiv');
+        var divTopMenu   = document.getElementById('blocklyTopMenu');
+        var divOption    = document.getElementById('optionMenu');
+        var posX = winWidth * .1 | 0, widthT = (winWidth * .9 | 0) - 1;
+       var posY = winHeight * .1 | 0, heightT = (winHeight * .9 | 0) - 1;
+
+        var menuItemSize = winWidth / 16;
+        if(menuItemSize > winHeight / 16)
+            menuItemSize = winHeight / 16;
+        if(menuItemSize > 32)
+            menuItemSize = 32;
+
+        var toolboxItemWidth = winWidth / 8;
+       var toolboxItemHeight = winHeight / 10;
+        for (var i = 0; i < 7; i++) {
+            divMenuL1.getElementsByClassName("blkToolCat")[i].style.width = toolboxItemWidth + "px";
+        }
+
+        divMenuL1.style.left = 0;
+        divMenuL1.style.top  = 0;
+        divMenuL1.style.width  = winWidth + "px";
+        divMenuL1.style.height = posY + "px";
+
+        divWorkspace.style.left = 0;
+        divWorkspace.style.top  = posY + "px";
+        divWorkspace.style.width  = winWidth + "px";
+        divWorkspace.style.height = heightT + "px";
+
+        divTopMenu.style.top    = posY + menuItemSize + toolboxItemHeight + "px";
+        divTopMenu.style.left   = (winWidth - 6 * menuItemSize) + "px";
+        divTopMenu.style.width  = 5 * menuItemSize + "px";
+        divTopMenu.style.height = 2 * menuItemSize + "px";
+
+        divOption.style.top    = 8 * menuItemSize + "px";
+        divOption.style.left   = (winWidth - 6 * menuItemSize) + "px";
+
+        divMenuL1.style.visibility = "visible";
+        divWorkspace.style.visibility = "visible";
+        divTopMenu.style.visibility="visible";
+        divOption.style.visibility="visible";
+
+        if(!workspace) {
+            workspace = Blockly.inject('blocklyDiv',
+                    {
+                        media: './media/',
+                        toolbox: document.getElementById('arm___'),
+                        zoom:
+                            {controls: true,
+                                startScale: 1.0,
+                                maxScale: 1.8,
+                                minScale: 0.6,
+                                scaleSpeed: 1.1},
+                        trashcan: true,
+                        horizontalLayout: true,
+                        scrollbars: true,
+                    });
+
+            document.getElementById('startblock').setAttribute("x", 0);
+            document.getElementById('startblock').setAttribute("y", 0);
+
+            Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
+                workspace);
+
+
+
+            Blockly.ContextMenu.show = function() {};        // disable context menu
+            workspace.addChangeListener(Blockly.Events.disableOrphans);
+            if (window.android == undefined) {
+                soaros_recorder_init();
+            }
+        }
+        else {
+            Blockly.svgResize(workspace);
+        }
+    }
+
+    function getTemplate(type) {
+        var request = null;
+        if (window.XMLHttpRequest) {
+            request = new XMLHttpRequest();
+        }
+        else if (window.ActiveXObject) {
+            request = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        if (request) {
+            var path = null;
+            // Find the template file path
+            switch (type) {
+                case 0:
+                    path = "./template/soaros_hand.txt";
+                    break;
+                case 1:
+                    path = "./template/soaros_motion.txt";
+                    break;
+                case 2:
+                    path = "./template/soaros_face.txt";
+                    break;
+                case 3:
+                    path = "./template/soaros_voice.txt";
+                    break;
+                default:
+                    break;
+            }
+
+            // Load file content
+            request.open("GET", path, true);
+            request.onreadystatechange = function () {
+                if (request.readyState === 4) {
+                    if (request.status == 200 || request.status == 0) {
+                        var text = request.responseText;
+                        if (text != null) {
+                            var xml = Blockly.Xml.textToDom(text);
+                            workspace.clear();
+                            Blockly.Xml.domToWorkspace(xml, workspace);
+                        }
+                    }
+                }
+            };
+            request.send(null);
+        }
+        else {
+            if (window.android) {
+                window.android.showToast("模板错误");
+            }
+            else {
+                alert("模板错误");
+            }
+        }
+    }
+
+    function getSubCodeBlock() {
+        var xmlDom = Blockly.Xml.subWorkspaceToDom(workspace);
+        if(xmlDom != null) {
+            return Blockly.Xml.subDomToPrettyText(xmlDom);
+        }
+        else {
+            return null;
+        }
+    }
+
+    function countSubFunctionId() {
+        var count = 0;
+        for(var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            var index = key.indexOf("subfunc");
+            if(index == 0) {
+                count++;
+            }
+        }
+        return "subfunc" + (count + 1);
+    }
+
+    /**
+     * Clear all blocks on workspace except start icon
+     */
+    function clearWorkspace() {
+        workspace.clear();
+        Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
+            workspace);
+    }
+
+    /**
+     * Currently use Android method to show template menu
+     */
+    function showTemplatesMenu() {
+        if (window.android) {
+            window.android.showTemplateMenu()
+        }
+    }
+</script>
+
+<script>
+    function setupWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
+        if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
+        window.WVJBCallbacks = [callback];
+        var WVJBIframe = document.createElement('iframe');
+        WVJBIframe.style.display = 'none';
+        WVJBIframe.src = 'https://__bridge_loaded__';
+        document.documentElement.appendChild(WVJBIframe);
+        setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
+    }
+
+    setupWebViewJavascriptBridge(function(bridge) {
+    });
+</script>
+
+</body>
+</html>

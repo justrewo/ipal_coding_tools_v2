@@ -9,6 +9,7 @@ import {MarsRobotEmulator} from "../robot/mars.robot.emulator";
 import {MarsActSerials} from "../robot/mars.act.serials";
 
 declare const Blockly;
+declare const robot3D;
 
 enum MODEL_LOAD_STATUS {
   MODEL_LOAD_STATUS_INIT,
@@ -41,6 +42,8 @@ export class HomePage {
   private workspace:any;
   private currentJoint:JOINT_ID = JOINT_ID.JOINT_ID_NONE;
 
+  private runTimer:any = null;
+
   @ViewChild("blocklyMenu")
   blocklyMenuDiv: ElementRef;
 
@@ -69,6 +72,7 @@ export class HomePage {
                         "action_donottouchme", "action_dance","action_turnpage", "action_takephoto", "action_toweling", "action_upgrade"];
     this.menuname[7] = ["control___", "control_loop", "control_simultaneously"];
 
+    /*
     this.event.subscribe("raycast",(obj)=>{
       this.handleRaycastEvent(obj);
     });
@@ -76,6 +80,7 @@ export class HomePage {
     this.event.subscribe("meshPicker",(obj)=>{
       this.handleMeshPickerEvent(obj);
     });
+    */
   }
 
   public ionViewDidEnter() {
@@ -86,23 +91,11 @@ export class HomePage {
     }
 
     this.addXMLTag(0);
-    let that = this;
-
-    let divMenu = document.getElementById('blocklyCategory');
-
-    divMenu.style.visibility = "visible";
-
-    let inter = setInterval(function() {
-      var menu = document.getElementById("head__");
-      if (menu != null) {
-        clearInterval(inter);
-        that.BlocklyAttach();
-        Blockly.JavaScript.workspaceToCode(this.workspace);
-      }
-
-    },50);
+    document.getElementById('blocklyCategory').style.visibility = "visible";
+    this.BlocklyAttach();
   }
 
+  /*
   private handleRaycastEvent(raycastObj:any) {
     console.log(raycastObj);
   }
@@ -110,23 +103,20 @@ export class HomePage {
   private handleMeshPickerEvent(pickedObj:any) {
     console.log(pickedObj);
   }
+  */
 
   public onRobotModelReady(model:any) {
     this.mars3DContext = model;
-    let that = this;
 
     if (this.robotView && this.robotView.marsModelViewer) {
       this.robotView.marsModelViewer.startRun();
-
       this.mars3DContext.sceneMngr.resizeContainer();
-
       this.currentJoint = JOINT_ID.JOINT_ID_HEAD_Y;
       this.minAngle= this.mars3DContext.bodyMngr.getJointMinValue(JOINT_ID.JOINT_ID_HEAD_Y);
       this.maxAngle = this.mars3DContext.bodyMngr.getJointMaxValue(JOINT_ID.JOINT_ID_HEAD_Y);
       this.targetAngle = this.mars3DContext.bodyMngr.getJointCurrentValue(JOINT_ID.JOINT_ID_HEAD_Y);
       this.cd.detectChanges();
     }
-
   }
 
   public onFrameActProgress(progress:any) {
@@ -146,29 +136,18 @@ export class HomePage {
   }
 
   public setToolboxCategory(index:number) {
-    if(this.toolBoxSelected == index) {
-      if (this.workspace.flyout_ ) {
-        this.workspace.flyout_.hide();
-        let elements = <HTMLElement[]><any>document.getElementsByClassName("blkToolCat");
-        elements[index].setAttribute("src", toolboximagepath + elements[index].id + ".png");
-        this.toolBoxSelected = -1;
+    this.toolBoxSelected = index;
+    this.addMenu(index);
+    this.workspace.updateToolbox(document.getElementById(this.menuname[index][0]));
 
-      }
-    } else {
-      this.toolBoxSelected = index;
-      this.addMenu(index);
-      this.workspace.updateToolbox(document.getElementById(this.menuname[index][0]));
-      //this.setToolboxBackground();
-      //document.getElementsByClassName("blkToolCat")[index].setAttribute("style", "background: #E4E4E4");
-      let elements = <HTMLElement[]><any>document.getElementsByClassName("blkToolCat");
+    let elements = <HTMLElement[]><any>document.getElementsByClassName("blkToolCat");
+    for (var i = 0; i < index; i++) {
+      elements[i].setAttribute("src", toolboximagepath + elements[i].id + ".png");
+    }
 
-      for (var i = 0; i < index; i++) {
-        elements[i].setAttribute("src", toolboximagepath + elements[i].id + ".png");
-      }
-      elements[index].setAttribute("src", selectedtoolboximagepath + elements[index].id + ".png");
-      for (var i = index + 1; i < elements.length; i++) {
-        elements[i].setAttribute("src", toolboximagepath + elements[i].id + ".png");
-      }
+    elements[index].setAttribute("src", selectedtoolboximagepath + elements[index].id + ".png");
+    for (var i = index + 1; i < elements.length; i++) {
+      elements[i].setAttribute("src", toolboximagepath + elements[i].id + ".png");
     }
   }
 
@@ -184,7 +163,6 @@ export class HomePage {
       ele.appendChild(ele_block_01);
     }
 
-    console.log(ele);
     this.blocklyMenuDiv.nativeElement.appendChild(ele);
   }
 
@@ -210,34 +188,91 @@ export class HomePage {
                                       { media: 'assets/media/',
                                         toolbox: document.getElementById('head__'),
                                         trashcan: true,
-                                        scrollbars: true,
+                                        scrollbars: true
                                       });
-      Blockly.ContextMenu.show = function() {};
 
       document.getElementById('startblock').setAttribute("x", "0");
       document.getElementById('startblock').setAttribute("y", "60");
 
       Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'), this.workspace);
-
-      if (this.current_pname != null && this.programe_data != null) {
-        let progdom = Blockly.Xml.textToDom(this.programe_data);
-        this.workspace.clear();
-        Blockly.Xml.domToWorkspace(progdom, this.workspace);
-      } else {
-        //let xmlcache = this.robotMngr.getBlocklyCache();
-
-        /*if (xmlcache != null) {
-         let cachedom = Blockly.Xml.textToDom(xmlcache);
-         this.workspace.clear();
-         Blockly.Xml.domToWorkspace(cachedom, this.workspace);
-         }*/
-      }
-
-      Blockly.ContextMenu.show = function() {};        // disable context menu
+      Blockly.ContextMenu.show = function () {};
       this.workspace.addChangeListener(Blockly.Events.disableOrphans);
     } else {
       Blockly.svgResize(this.workspace);
     }
   }
 
+  public highlightbuttion(id){
+    switch(id)
+    {
+      case "play":
+        document.getElementById("topMenuPlay").setAttribute("src", "assets/imgs/menu/play.png");
+        break;
+
+      case "save":
+        document.getElementById("topMenuSave").setAttribute("src", "assets/imgs/menu/save.png");
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  public resetbuttion(id) {
+    switch (id) {
+      case "play":
+        document.getElementById("topMenuPlay").setAttribute("src", "assets/imgs/menu/play.png");
+        break;
+
+      case "save":
+        document.getElementById("topMenuSave").setAttribute("src", "assets/imgs/menu/save.png");
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  public playaction() {
+    var code = Blockly.JavaScript.workspaceToCode(this.workspace);
+    console.log(code);
+
+    let engine = new RobotEngine(this.mars3DContext);
+    let runtime = robot3D.create(code, engine);
+    runtime.onStop = () => {
+      console.log("wangjun:" + "runtime stop");
+      clearInterval(this.runTimer);
+      this.runTimer = null;
+    };
+    if (this.runTimer == null) {
+      this.runTimer = setInterval(() => {
+        runtime.run();
+      }, 200);
+    }
+
+    if ((this.mars3DContext) && (this.currentJoint != JOINT_ID.JOINT_ID_NONE)) {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(this.currentJoint,this.targetAngle);
+    }
+  }
+
+  public saveaction() {
+
+  }
+
+}
+
+export class RobotEngine {
+  private mars3DContext:Mars3DContext = null;
+
+  public constructor(context:Mars3DContext) {
+    this.mars3DContext = context;
+  }
+
+  public call(self, thrd, type, arg) {
+    console.log("wangjun" + "in robot engine call");
+    if (type == "nod_head") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_HEAD_Y, 20);
+    }
+    console.log("wangjun type is " + type);
+  }
 }

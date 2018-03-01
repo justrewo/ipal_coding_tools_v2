@@ -57,21 +57,16 @@ export  class  MarsRobotViewer implements AfterViewInit,OnDestroy{
 
     this.model_service.asyLoadMarsRobotModule().then((model)=>{
       that.loadingStatus = MODEL_LOAD_STATUS.MODEL_LOAD_STATUS_LOADED;
-
       that.mars3DContext = model;
       that.marsModelViewer.setMars3DContext(model);
       that.onRobotModelReady.emit(model);
-
-
     }).catch((err)=>{
-      that.loadingStatus = MODEL_LOAD_STATUS.MODEL_LOAD_STATUS_ERR;
-      that.mars3DContext = null;
       console.log(err);
 
+      that.loadingStatus = MODEL_LOAD_STATUS.MODEL_LOAD_STATUS_ERR;
+      that.mars3DContext = null;
       that.onRobotModelReady.emit(null);
-
     });
-
   }
 
   public isLoading():boolean {

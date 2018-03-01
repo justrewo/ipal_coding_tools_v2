@@ -179,6 +179,7 @@ Blockly.Xml.subBlockToDom = function (block, opt_noId) {
     return element;
 };
 
+/*
 Blockly.Generator.prototype.workspaceToCode = function (workspace) {
 	if (!workspace) {
 		// Backwards compatibility from before there could be multiple workspaces.
@@ -204,7 +205,7 @@ Blockly.Generator.prototype.workspaceToCode = function (workspace) {
 			code.push(line);
 		}
 	}
-	code = code.join('}\n');  // Blank line between each section.
+	//code = code.join('}\n');  // Blank line between each section.
 	code = code + '}\n';  // Blank line between each section.
 	code = this.finish(code);
 	// Final scrubbing of whitespace.
@@ -213,6 +214,7 @@ Blockly.Generator.prototype.workspaceToCode = function (workspace) {
 	code = code.replace(/[ \t]+\n/g, '\n');
 	return code;
 };
+*/
 
 Blockly.init_ = function(mainWorkspace) {
     var options = mainWorkspace.options;
@@ -393,5 +395,23 @@ Blockly.ZoomControls.prototype.createDom = function() {
 	});
 
 	return this.svgGroup_;
+};
+
+Blockly.hideChaff = function (opt_allowToolbox) {
+  Blockly.Tooltip.hide();
+  Blockly.WidgetDiv.hide();
+
+  if (!opt_allowToolbox){
+    var workspace = Blockly.getMainWorkspace();
+    if (workspace.flyout_) {
+      workspace.flyout_.hide();
+    }
+    if (workspace.toolbox_ &&
+        workspace.toolbox_.flyout_ &&
+        workspace.toolbox_.flyout_.autoClose) {
+        workspace.toolbox_.flyout_.hide();
+        workspace.toolbox_.clearSelection();
+    }
+  }
 };
 

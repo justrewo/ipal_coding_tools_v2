@@ -14,7 +14,7 @@
   <div no-margin no-padding style="display: flex;flex-direction: row;width: 100%;height: 100%">
    <!-- blockly area -->
    <div no-margin no-padding style="display: flex;height: 100%;width: 70%;background-color: #2ec95c">
-    <div style="flex-direction:column; flex-grow: 0; height: 100%; background: #888888; display: flex;" id="blocklyCategory">
+    <div style="flex-direction:column; flex-grow: 0; height: 100%; width:100px; background: #888888; display: flex;" id="blocklyCategory">
       <div class="blkDiv">
         <input class="blkToolCat" type="image" src="assets/imgs/category/tool_head.png" id="head" (click)="setToolboxCategory(0)"/>
       </div>
@@ -42,6 +42,12 @@
     </div>
     <div style=" flex-grow: 100;width: 100%;background-color: white; position: relative;overflow: hidden">
       <div  style="position: absolute;left: 0px;right: 0px;bottom: 0px;top: 0px; background-color:transparent;z-index: 1;"  id="blocklyDiv">
+      </div>
+      <div style="position: absolute; right: 35px; top: 10px; width: 100px; height:40px; display: flex; justify-content:space-between; background-color: transparent; z-index: 2;" id="blocklyTopMenu">
+        <input style="width: 40px;" type="image" id="topMenuPlay" src="assets/imgs/menu/play.png"
+               (click)="playaction()" (mousedown)="highlightbuttion('play')" (mouseup)="resetbuttion('play')"/>
+        <input style="width: 40px;" type="image" id="topMenuSave" src="assets/imgs/menu/save.png"
+               (click)="saveaction()" (mousedown)="highlightbuttion('save')" (mouseup)="resetbuttion('save')"/>
       </div>
     </div>
     <div #blocklyMenu style="visibility: hidden"></div>

@@ -70,7 +70,7 @@ export class HomePage {
                         "emotion_angry", "emotion_amazed","emotion_shy", "emotion_doubt"];
     this.menuname[6] = ["action___", "action_handshake", "action_wavehand", "action_cheer", "action_embrace","action_rubeye", "action_shutup",
                         "action_donottouchme", "action_dance","action_turnpage", "action_takephoto", "action_toweling", "action_upgrade"];
-    this.menuname[7] = ["control___", "control_loop", "control_simultaneously"];
+    this.menuname[7] = ["control___", "control_loop", "control_simultaneously", "action_reset"];
 
     /*
     this.event.subscribe("raycast",(obj)=>{
@@ -255,10 +255,11 @@ export class HomePage {
     }
   }
 
-  public saveaction() {
-
+  public resetaction() {
+    if (this.mars3DContext) {
+      this.mars3DContext.bodyMngr.reset();
+    }
   }
-
 }
 
 export class RobotEngine {
@@ -296,6 +297,12 @@ export class RobotEngine {
       this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_RIGHT_ELBOW_BEND, parseInt(arg));
     } else if (type == "right_wrist_rotate") {
       this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_RIGHT_PALM_ROTATE, parseInt(arg));
+    } else if (type == "move_turn_left") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_CHASSIS_ROTATE, parseInt(arg));
+    } else if (type == "move_turn_right") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_CHASSIS_ROTATE, 0 - parseInt(arg));
+    } else if (type == "action_reset") {
+      this.mars3DContext.bodyMngr.reset();
     }
 
     let callback = () => {

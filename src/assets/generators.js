@@ -325,6 +325,11 @@ Blockly.JavaScript['control_simultaneously'] = function(block) {
   return code;
 };
 
+Blockly.JavaScript['action_reset'] = function(block) {
+  var code = '{\n call("action_reset","");\n}\n';
+  return code;
+};
+
 Blockly.JavaScript['control_variables_get'] = function(block) {
     var dropdown_varname = block.getFieldValue('varname');
     // TODO: Assemble JavaScript into code variable.

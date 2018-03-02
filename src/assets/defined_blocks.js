@@ -32,9 +32,7 @@ Blockly.Blocks['nod_head'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 15,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 15
   });
   }
 };
@@ -54,9 +52,7 @@ Blockly.Blocks['shake_head'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 15,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 15
   });
   }
 };
@@ -75,16 +71,14 @@ Blockly.Blocks['left_head'] = {
       {
         "type": "field_angle",
         "name": "angle",
-          "angle": 0,
+          "angle": 10,
           "min": 0,
           "max": 40
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 15,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 15
   });
   }
 };
@@ -103,16 +97,14 @@ Blockly.Blocks['right_head'] = {
       {
             "type": "field_angle",
             "name": "angle",
-            "angle": 0,
+            "angle": 10,
             "min": 0,
             "max": 40
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 15,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 15
   });
   }
 };
@@ -132,16 +124,14 @@ Blockly.Blocks['left_upper_arm_rotate'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": -25,
         "max": 175
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 50,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 50
   });
   }
 };
@@ -161,16 +151,14 @@ Blockly.Blocks['left_upper_arm_rotate'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": 0,
         "max": 65
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 50,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 50
   });
   }
 };
@@ -189,16 +177,14 @@ Blockly.Blocks['left_lower_arm_rotate'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": -80,
         "max": 80
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 50,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 50
   });
   }
 };
@@ -218,16 +204,14 @@ Blockly.Blocks['left_lower_arm_roll'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": 0,
         "max": 90
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 50,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 50
   });
   }
 };
@@ -247,16 +231,14 @@ Blockly.Blocks['left_wrist_rotate'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": -80,
         "max": 80
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 50,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 50
   });
   }
 };
@@ -276,16 +258,14 @@ Blockly.Blocks['right_upper_arm_rotate'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": -25,
         "max": 175
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 90,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 90
   });
   }
 };
@@ -305,16 +285,14 @@ Blockly.Blocks['right_upper_arm_roll'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": 0,
         "max": 65
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 90,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 90
   });
   }
 };
@@ -334,16 +312,14 @@ Blockly.Blocks['right_lower_arm_rotate'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": -80,
         "max": 80
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 90,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 90
   });
   }
 };
@@ -363,16 +339,14 @@ Blockly.Blocks['right_lower_arm_roll'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": 0,
         "max": 90
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 90,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 90
   });
   }
 };
@@ -392,16 +366,14 @@ Blockly.Blocks['right_wrist_rotate'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": -80,
         "max": 80
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 90,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 90
   });
   }
 };
@@ -451,9 +423,7 @@ Blockly.Blocks['move_forward'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 350,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 350
   });
   }
 };
@@ -503,9 +473,7 @@ Blockly.Blocks['move_backward'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 350,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 350
   });
   }
 };
@@ -525,16 +493,14 @@ Blockly.Blocks['move_turn_left'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": 0,
         "max": 180
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 350,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 350
   });
   }
 };
@@ -554,16 +520,14 @@ Blockly.Blocks['move_turn_right'] = {
       {
         "type": "field_angle",
         "name": "angle",
-        "angle": 0,
+        "angle": 10,
         "min": 0,
         "max": 180
       }
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 350,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 350
   });
   }
 };
@@ -583,9 +547,7 @@ Blockly.Blocks['emotion_smile'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 180,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 180
   });
   }
 };
@@ -605,9 +567,7 @@ Blockly.Blocks['emotion_laugh'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 180,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 180
   });
   }
 };
@@ -627,9 +587,7 @@ Blockly.Blocks['emotion_sad'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 180,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 180
   });
   }
 };
@@ -649,9 +607,7 @@ Blockly.Blocks['emotion_cry'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 180,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 180
   });
   }
 };
@@ -671,9 +627,7 @@ Blockly.Blocks['emotion_angry'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 180,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 180
   });
   }
 };
@@ -693,9 +647,7 @@ Blockly.Blocks['emotion_amazed'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 180,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 180
   });
   }
 };
@@ -714,9 +666,7 @@ Blockly.Blocks['emotion_shy'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 180,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 180
   });
   }
 };
@@ -735,9 +685,7 @@ Blockly.Blocks['emotion_doubt'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 180,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 180
   });
   }
 };
@@ -757,9 +705,7 @@ Blockly.Blocks['action_handshake'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -779,9 +725,7 @@ Blockly.Blocks['action_wavehand'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -801,9 +745,7 @@ Blockly.Blocks['action_wavehand'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -823,9 +765,7 @@ Blockly.Blocks['action_embrace'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -845,9 +785,7 @@ Blockly.Blocks['action_rubeye'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -867,9 +805,7 @@ Blockly.Blocks['action_shutup'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -889,9 +825,7 @@ Blockly.Blocks['action_donottouchme'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -911,9 +845,7 @@ Blockly.Blocks['action_dance'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -933,9 +865,7 @@ Blockly.Blocks['action_turnpage'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -954,9 +884,7 @@ Blockly.Blocks['action_takephoto'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -976,9 +904,7 @@ Blockly.Blocks['action_takephoto'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -998,9 +924,7 @@ Blockly.Blocks['action_takephoto'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 210,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 210
   });
   }
 };
@@ -1062,9 +986,7 @@ Blockly.Blocks['action_takephoto'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 260,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 260
   });
   }
 };
@@ -1188,7 +1110,7 @@ Blockly.Blocks['speak_record'] = {
       {
         "type": "field_imagebutton",
         "name": "recordsrc",
-        "src": "./images/recordstart.png",
+        "src": "assets/imgs/recordstart.png",
         "width": 90,
         "height": 30,
         "alt": "*"
@@ -1196,9 +1118,7 @@ Blockly.Blocks['speak_record'] = {
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 260,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 260
   });
   }
 };
@@ -1253,9 +1173,7 @@ Blockly.Blocks['speak_record'] = {
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 300,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 300
     });
   }
 };
@@ -1272,9 +1190,18 @@ Blockly.Blocks['speak_record'] = {
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 300,
-    "tooltip": "",
-    "helpUrl": "http://www.example.com/"
+    "colour": 300
+    });
+  }
+};
+
+Blockly.Blocks['action_reset'] = {
+  init: function() {
+    this.jsonInit({
+    "message0": "动作复位",
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 300
     });
   }
 };

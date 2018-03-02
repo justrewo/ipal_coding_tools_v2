@@ -269,10 +269,44 @@ export class RobotEngine {
   }
 
   public call(self, thrd, type, arg) {
-    console.log("wangjun" + "in robot engine call");
-    if (type == "nod_head") {
-      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_HEAD_Y, 20);
+    console.log("RobotEngine call type:" + type + " arg:" + arg);
+    let time_start = new Date();
+    let time_wait = 1300;
+    if (type == "left_head") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_HEAD_Y, parseInt(arg));
+    } else if (type == "right_head") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_HEAD_Y, 0 - parseInt(arg));
+    } else if (type == "left_upper_arm_rotate") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_LEFT_SHOULDER_X, parseInt(arg));
+    } else if (type == "left_upper_arm_roll") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_LEFT_SHOULDER_Z, parseInt(arg));
+    } else if (type == "left_lower_arm_rotate") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_LEFT_ELBOW_ROTATE, parseInt(arg));
+    } else if (type == "left_lower_arm_roll") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_LEFT_ELBOW_BEND, parseInt(arg));
+    } else if (type == "left_wrist_rotate") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_LEFT_PALM_ROTATE, parseInt(arg));
+    } else if (type == "right_upper_arm_rotate") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_RIGHT_SHOULDER_X, parseInt(arg));
+    } else if (type == "right_upper_arm_roll") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_RIGHT_SHOULDER_Z, parseInt(arg));
+    } else if (type == "right_lower_arm_rotate") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_RIGHT_ELBOW_ROTATE, parseInt(arg));
+    } else if (type == "right_lower_arm_roll") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_RIGHT_ELBOW_BEND, parseInt(arg));
+    } else if (type == "right_wrist_rotate") {
+      this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_RIGHT_PALM_ROTATE, parseInt(arg));
     }
-    console.log("wangjun type is " + type);
+
+    let callback = () => {
+      let N__wait = new Date();
+      console.log("now time is " + N__wait.getTime());
+      console.log("start time is " + time_start.getTime());
+      if (N__wait.getTime() - time_start.getTime() >= time_wait) {
+        return null;
+      }
+      return callback;
+    }
+    return callback;
   }
 }

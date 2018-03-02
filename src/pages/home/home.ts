@@ -4,7 +4,7 @@ import {Mars3DContext, MarsModelService} from "../../service/mars.model.service"
 import {MarsRobotViewer} from "../robot/mars.robot.viewer";
 import {Events, NavController, ToastController} from "ionic-angular";
 import {JOINT_ID, MarsJointStatus} from "../../3d/mars.joint.mngr";
-import {AvatorKeyFrame, MarsJointAction} from "../../3d/mars.joint.action";
+import {AvatorFrames, AvatorKeyFrame, MarsJointAction, MarsMoveParam} from "../../3d/mars.joint.action";
 import {MarsRobotEmulator} from "../robot/mars.robot.emulator";
 import {MarsActSerials} from "../robot/mars.act.serials";
 
@@ -303,17 +303,38 @@ export class RobotEngine {
       this.mars3DContext.bodyMngr.rotateJoint2Angle(JOINT_ID.JOINT_ID_CHASSIS_ROTATE, 0 - parseInt(arg));
     } else if (type == "action_reset") {
       this.mars3DContext.bodyMngr.reset();
+    } else if (type == "move_forward") {
+      this.move(parseInt(arg));
+    } else if (type == "move_backward") {
+      this.move(0 - parseInt(arg));
     }
 
     let callback = () => {
       let N__wait = new Date();
-      console.log("now time is " + N__wait.getTime());
-      console.log("start time is " + time_start.getTime());
       if (N__wait.getTime() - time_start.getTime() >= time_wait) {
         return null;
       }
       return callback;
     }
     return callback;
+  }
+
+  private move(distance:number) {
+    let kk = new AvatorKeyFrame();
+    let joint_action:MarsJointAction = new MarsJointAction();
+    joint_action.jointID = JOINT_ID.JOINT_ID_MOVE;
+    let move_param = new MarsMoveParam();
+    move_param.currentDistance = 0;
+    move_param.targetDistance = distance;
+    move_param.moveRate = 100;
+    joint_action.contextParam = move_param;
+
+    kk.addJontAction(joint_action);
+
+    let ff  = new AvatorFrames();
+    ff.addKeyFrame(kk);
+
+    this.mars3DContext.bodyMngr.addAvatarAnimation(ff);
+    this.mars3DContext.bodyMngr.startAnimation();
   }
 }

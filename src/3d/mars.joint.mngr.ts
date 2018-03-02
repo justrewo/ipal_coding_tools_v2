@@ -27,6 +27,8 @@ export enum JOINT_ID {
 
 
   JOINT_ID_CHASSIS_ROTATE,        //底盘旋转
+
+  JOINT_ID_MOVE,                  //向前移动
 }
 
 export const JointLimitConfigure = {
@@ -98,7 +100,14 @@ export const JointLimitConfigure = {
   JOINT_ID_CHASSIS_ROTATE: {
     min:-180,
     max:180
+  },
+
+
+  JOINT_ID_MOVE: {
+    min:0,
+    max:10000000
   }
+
 };
 
  export function getJointAlias(jointID:JOINT_ID):string {
@@ -153,6 +162,10 @@ export const JointLimitConfigure = {
     case JOINT_ID.JOINT_ID_CHASSIS_ROTATE: {
       return "底盘旋转";
     }
+
+    case JOINT_ID.JOINT_ID_MOVE: {
+      return "向前移动";
+    }
   }
 
   return "";
@@ -172,13 +185,16 @@ export class MarsJointStatus {
   }
 }
 
+
 export class MarsJointProfile {
   public jointID:JOINT_ID = JOINT_ID.JOINT_ID_NONE;
   public alias:string;
+
   public minAngle:number;
   public maxAngle:number;
 
-  public actionRate:number;
+  public actionRate:number;   //旋转的角速度
+
   public currentAngle:number;
 
   public rotateAxis:any = null;   //关节的旋转轴,向量必须单位化
@@ -271,6 +287,23 @@ export class MarsJointMngr {
   }
 
 
+  public addMoveJoint(joint:MarsJointProfile) {
+    if (joint.jointID != JOINT_ID.JOINT_ID_MOVE) {
+      console.log("joint invalid");
+      return;
+    }
+
+    this.joint_list.forEach(function (item) {
+      if (joint.jointID == item.jointID) {
+        console.log("jointID is duplicate");
+        return;
+      }
+    });
+
+    this.joint_list.push(joint);
+  }
+
+
   public rotateJoint2Angle(jointID:JOINT_ID, targetAngle:number) {
     this.joint_list.forEach(function (item) {
       if (item.jointID == jointID) {
@@ -278,6 +311,8 @@ export class MarsJointMngr {
       }
     });
   }
+
+
 
   public getMinAngle(jointID:JOINT_ID):number {
     let result:number = 0;

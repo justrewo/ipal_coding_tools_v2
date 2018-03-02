@@ -1,9 +1,12 @@
 import {JOINT_ID, JointLimitConfigure, MarsJointMngr, MarsJointProfile, MarsJointStatus} from "./mars.joint.mngr";
-import {AvatorFrames, AvatorKeyFrame, MarsJointAction} from "./mars.joint.action";
+import {AvatorFrames, AvatorKeyFrame, MarsJointAction, MarsMoveParam} from "./mars.joint.action";
 import {MarsEventService} from "../service/mars.event.service";
+import {MarsSceneMngr} from "./mars.scene.mngr";
 
 
-declare var THREE;
+
+declare const THREE;
+declare const Ammo;
 
 
 const GLOBAL_X_OFFSET:number = -1130.39;
@@ -35,21 +38,46 @@ export class MarsBodyPart {
 
     this.subBodyPart = [];      //子部位
   }
+
+
+  public displayMeshVetcs() {
+    if (this.meshObjects.length > 0) {
+      this.meshObjects.forEach(function (item) {
+        let tmp_bufferGeometry:any = item.geometry;
+        let tmp_position = tmp_bufferGeometry.getAttribute("position");
+        console.log("Count:" + tmp_position.count + "  ");
+      });
+
+    } else {
+      console.log("No mesh");
+    }
+
+    this.subBodyPart.forEach(function (item) {
+      item.displayMeshVetcs();
+    });
+  }
+
+
+
+
 }
 
 export class MarsBodyMngr {
+  private baseRoot:any = null;
+  private sceneMngr:any = null;
   private stepAnimation: boolean = false;
   private bodyParts: Array<MarsBodyPart> = [];
   private bodyRoot: any = null;
   private jointMngr: MarsJointMngr = null;
+
   private avatarActFrames: Array<AvatorFrames> = [];
 
 
-  public constructor(objModel: any) {
+  public constructor(objModel: any, _sceneMngr:MarsSceneMngr) {
     let that: any = this;
 
     this.jointMngr = new MarsJointMngr();
-
+    this.sceneMngr = _sceneMngr;
 
     /* 底盘部分 */
     let chassisPart: MarsBodyPart = new MarsBodyPart();
@@ -70,6 +98,11 @@ export class MarsBodyMngr {
     chassisJoint.attatchNode = chassisPart.attatchNode;
     chassisJoint.rotateAxis = new THREE.Vector3(0, 1, 0);
     this.jointMngr.addJoint(chassisJoint);
+    this.baseRoot = chassisPart.attatchNode;
+
+    if (coor_debug) {
+      chassisPart.attatchNode.add(MarsBodyMngr.makeCoordinates());
+    }
 
     /**************************************** 主体部分 ******************************************/
     let mainPart: MarsBodyPart = new MarsBodyPart();
@@ -155,7 +188,6 @@ export class MarsBodyMngr {
 
     leftArmPart.attatchNode = new THREE.Group();
     leftArmPart.attatchNode.position.set(0, 0, 0);
-    //leftArmPart.attatchNode.position.set(120,245,-10);
 
     left_root_part.subBodyPart.push(leftArmPart);
 
@@ -318,9 +350,7 @@ export class MarsBodyMngr {
       rightArmPart.attatchNode.add(MarsBodyMngr.makeCoordinates());
     }
 
-
     right_root_part.subBodyPart.push(rightArmPart);
-
 
     let rightShoulder_sub_part: MarsBodyPart = new MarsBodyPart();
     rightShoulder_sub_part.aliasName = "rightShoulder_sub_part";
@@ -460,11 +490,8 @@ export class MarsBodyMngr {
       right_palm_rotate_joint.rotateAxis = new THREE.Vector3(plane_normal.x, plane_normal.y, plane_normal.z);
       right_palm_rotate_joint.attatchNode = right_palm.attatchNode;
       this.jointMngr.addJoint(right_palm_rotate_joint);
-
     }
     /******************************** 右手 ******************************************/
-
-
     mainPart.subBodyPart.push(headPart);
     mainPart.subBodyPart.push(left_root_part);
     mainPart.subBodyPart.push(right_root_part);
@@ -482,12 +509,24 @@ export class MarsBodyMngr {
     this.bodyRoot = new THREE.Group();
     this.bodyRoot.position.set(0, 0, 0);
 
+    if (coor_debug) {
+      this.bodyRoot.add(MarsBodyMngr.makeCoordinates());
+    }
+
+
     for (let item of bodyMeshSet) {
       this.importMesh(this.bodyParts, item);
     }
 
+
     this.bodyParts.forEach(function (item) {
       that.bodyRoot.add(item.attatchNode);
+    });
+
+
+    //创建各个部分的PhysicsShape;
+    this.bodyParts.forEach(function (bodyPart) {
+      that.makePhysicsShape(bodyPart);
     });
 
     return;
@@ -497,6 +536,8 @@ export class MarsBodyMngr {
   //通用关节转动函数
   public rotateJoint2Angle(jointID: JOINT_ID, angle: number) {
     this.jointMngr.rotateJoint2Angle(jointID, angle);
+
+    this.updateAllBodyPartsPhysics();
   }
 
 
@@ -628,9 +669,17 @@ export class MarsBodyMngr {
     let finished: boolean = true;
 
     allJointActions.forEach(function (item) {
-      if ( Math.abs(that.jointMngr.getCurrentAngle(item.jointID) - item.target) > 0.0001) {
-        finished = false;
+      if (item.jointID != JOINT_ID.JOINT_ID_MOVE) {
+        if ( Math.abs(that.jointMngr.getCurrentAngle(item.jointID) - item.target) > 0.0001) {
+          finished = false;
+        }
+      } else {
+        let moveParam:MarsMoveParam = item.contextParam;
+        if (Math.abs(moveParam.targetDistance - moveParam.currentDistance) > 0.0001) {
+          finished = false;
+        }
       }
+
     });
     return finished;
   }
@@ -638,35 +687,43 @@ export class MarsBodyMngr {
 
   public addAvatarAnimation(animation: AvatorFrames): void {
     this.avatarActFrames.push(animation);
-    //console.log("kiss");
-
   }
 
 
   private animationStepJoint(jointAction: MarsJointAction, delta: number):void {
-    let delta_angle:number = this.jointMngr.getActionRate(jointAction.jointID) * delta;
-    let current_angle:number = this.jointMngr.getCurrentAngle(jointAction.jointID);
-    let target_angle:number = jointAction.target;
+    if (jointAction.jointID != JOINT_ID.JOINT_ID_MOVE) {
+      let delta_angle:number = this.jointMngr.getActionRate(jointAction.jointID) * delta;
+      let current_angle:number = this.jointMngr.getCurrentAngle(jointAction.jointID);
+      let target_angle:number = jointAction.target;
 
-    let angle_offset:number = target_angle - current_angle;
+      let angle_offset:number = target_angle - current_angle;
 
-    if (angle_offset > 0) {
-      if (delta_angle > angle_offset) {
-        delta_angle = angle_offset;
+      if (angle_offset > 0) {
+        if (delta_angle > angle_offset) {
+          delta_angle = angle_offset;
+        }
+
+        this.rotateJoint2Angle(jointAction.jointID, current_angle + delta_angle);
+
+      } else if (angle_offset < 0) {
+        delta_angle = - delta_angle;
+
+        if ((current_angle + delta_angle) < target_angle) {
+          delta_angle = target_angle - current_angle;
+        }
+        this.rotateJoint2Angle(jointAction.jointID, current_angle + delta_angle);
+      }
+    } else {
+      let moveParam:MarsMoveParam = jointAction.contextParam;
+      let dist_delta = moveParam.moveRate * delta;
+
+      if ((moveParam.currentDistance + dist_delta) > moveParam.targetDistance) {
+        dist_delta = moveParam.targetDistance - moveParam.currentDistance;
       }
 
-      this.rotateJoint2Angle(jointAction.jointID, current_angle + delta_angle);
-
-    } else if (angle_offset < 0) {
-      delta_angle = - delta_angle;
-
-      if ((current_angle + delta_angle) < target_angle) {
-        delta_angle = target_angle - current_angle;
-      }
-
-
-      this.rotateJoint2Angle(jointAction.jointID, current_angle + delta_angle);
-    }
+      moveParam.currentDistance = moveParam.currentDistance + dist_delta;
+      this.moveForward(dist_delta);
+     }
   }
 
 
@@ -684,9 +741,8 @@ export class MarsBodyMngr {
     if (this.stepAnimation) {
       if (this.avatarActFrames.length > 0) {
         let acts: AvatorFrames = (this.avatarActFrames)[0];
-
-
         let keyFrame: AvatorKeyFrame = acts.getHeadKeyFrame();
+
         if (keyFrame != null) {
           this.animationStepKeyFrame(delta, keyFrame);
           if (this.isKeyFrameFinished(keyFrame)) {
@@ -701,6 +757,9 @@ export class MarsBodyMngr {
         if (this.avatarActFrames.length == 0) {
           MarsEventService.getSigleton().getEventHub().publish("animationFinished",this);
         }
+
+      } else {
+        this.stopAnimation();
       }
     }
   }
@@ -730,4 +789,94 @@ export class MarsBodyMngr {
 
     return result;
   }
+
+
+  public getAllBodyPartList():Array<MarsBodyPart> {
+    return this.bodyParts;
+  }
+
+
+
+  private makePhysicsShape(bodyPart:MarsBodyPart) {
+    let that = this;
+    bodyPart.meshObjects.forEach(function (meshItem) {
+      let tmp_shape = that.meshShapeFromThreeObj(meshItem);
+      meshItem.p_shape = tmp_shape;
+    });
+
+    bodyPart.subBodyPart.forEach(function (subBody) {
+      that.makePhysicsShape(subBody);
+    });
+  }
+
+
+
+  private meshShapeFromThreeObj(meshObj:any):any {
+    return this.sceneMngr.createTriangleMeshShapFromThreeMesh(meshObj);
+  }
+
+
+
+  public updateAllBodyPartsPhysics() {
+    //更新所有部分的物理位置
+
+    let that = this;
+
+    this.bodyParts.forEach(function (bodyPart) {
+      that.updateBodyPartPhysicsPosition(bodyPart);
+    });
+
+  }
+
+
+  private updateBodyPartPhysicsPosition(bodyPart:MarsBodyPart) {
+    let that = this;
+    bodyPart.meshObjects.forEach(function (meshObj) {
+      //根据模型的位置重新计算物理物体的位置
+
+      {
+        if ((meshObj.userData) && (meshObj.userData.physicsBody)) {
+          let pos = meshObj.getWorldPosition();
+          let quat = meshObj.getWorldQuaternion();
+
+          let transform = new Ammo.btTransform();
+          let vect = new Ammo.btVector3(pos.x, pos.y, pos.z);
+          let qua = new Ammo.btQuaternion( quat.x, quat.y, quat.z, quat.w);
+
+          transform.setIdentity();
+          transform.setOrigin(vect);
+          transform.setRotation(qua);
+
+          let motionState = new Ammo.btDefaultMotionState(transform);
+          meshObj.userData.physicsBody.setMotionState(motionState);
+
+          Ammo.destroy(transform);
+          Ammo.destroy(vect);
+          Ammo.destroy(qua);
+          Ammo.destroy(motionState);
+        }
+      }
+    });
+
+    //递归设置子部分的位置
+    bodyPart.subBodyPart.forEach(function (bodyInfo) {
+      that.updateBodyPartPhysicsPosition(bodyInfo);
+    });
+
+  }
+
+
+  public moveForward(dist_delta:number) {
+    let pos =this.bodyRoot.position;
+    let qua = this.baseRoot.quaternion;
+
+    let vector = new THREE.Vector3( 0, 0, dist_delta);
+    vector = vector.applyQuaternion(qua);
+
+    let dist_pos = new THREE.Vector3(pos.x + vector.x, pos.y, pos.z + vector.z);
+    this.bodyRoot.position.set(dist_pos.x, dist_pos.y, dist_pos.z);
+    this.updateAllBodyPartsPhysics();
+
+  }
+
 }

@@ -70,8 +70,9 @@ export class MarsModelService {
               }
             });
 
-            let bodyMngr = new MarsBodyMngr(obj);
             let sceneMngr = new MarsSceneMngr();
+            let bodyMngr = new MarsBodyMngr(obj,sceneMngr);
+
             let mars3DContext = new Mars3DContext();
 
             bodyMngr.addModel2Scene(attachRoot);
@@ -129,8 +130,8 @@ export class MarsModelService {
               }
             });
 
-            let bodyMngr = new MarsBodyMngr(obj);
             let sceneMngr = new MarsSceneMngr();
+            let bodyMngr = new MarsBodyMngr(obj,sceneMngr);
             let mars3DContext = new Mars3DContext();
 
             bodyMngr.addModel2Scene(attachRoot);
@@ -144,18 +145,6 @@ export class MarsModelService {
 
             resolve(mars3DContext);
 
-            /*
-
-            that.asyncLoadScale().then(function (scal_node) {
-              mars3DContext.attachNode.add(scal_node);
-              resolve(mars3DContext);
-
-            },function (msg) {
-              resolve(mars3DContext);
-            });*/
-
-
-
           },onModelLoadProgress, onModelLoadError);
         });
       }
@@ -165,40 +154,7 @@ export class MarsModelService {
   }
 
 
-  private loadScale():Promise<any> {
-    let that = this;
 
-
-    let promise = new Promise<any>((resolve, reject)=>{
-      if (that.scaleNode != null) {
-        resolve(that.scaleNode);
-      } else {
-        let onModelLoadProgress = function (resp) {
-          console.log("mars:" + resp);
-        };
-
-        let onModelLoadError = function (resp) {
-          console.log("mars:" + resp);
-        };
-
-        let mngr = new THREE.LoadingManager();
-        mngr.onProgress = function () {
-        };
-
-        let loader = new THREE.TextureLoader();
-        loader.load("./assets/model/1.png",function (texture) {
-          let meshIndex = 1;
-          let mesh_loader = new THREE.OBJLoader(mngr);
-          mesh_loader.load("./assets/model/xiantiao.obj",function (obj) {
-            resolve(obj);
-
-          },onModelLoadProgress, onModelLoadError);
-        });
-      }
-
-    });
-    return promise;
-  }
 
 
   public async asyLoadMarsRobotModule():Promise<Mars3DContext> {
@@ -214,10 +170,5 @@ export class MarsModelService {
     return context;
   }
 
-
-  public async asyncLoadScale():Promise<any> {
-    let context = await this.loadScale();
-    return context;
-  }
 
 }

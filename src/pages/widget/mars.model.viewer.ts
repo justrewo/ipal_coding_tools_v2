@@ -57,9 +57,6 @@ import {Mars3DContext} from "../../service/mars.model.service";
         that.mars3DContext.sceneMngr.attach2DOMNode(robot_container);
         //that.startRun();
 
-        if ((that.cameraPos != 0)) {
-          that.mars3DContext.sceneMngr.setCameraPos(that.cameraPos);
-        }
 
         that.mars3DContext.sceneMngr.enableOrbit(that.orbitEnable);
         that.mars3DContext.sceneMngr.enablePickObject(that.pickEnable);

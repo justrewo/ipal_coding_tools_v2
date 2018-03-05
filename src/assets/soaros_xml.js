@@ -415,3 +415,14 @@ Blockly.hideChaff = function (opt_allowToolbox) {
   }
 };
 
+Blockly.WorkspaceSvg.prototype.isDeleteArea = function (e) {
+	var xy = new goog.math.Coordinate(e.clientX, e.clientY);
+	if (this.deleteAreaTrash_ && this.deleteAreaTrash_.contains(xy)) {
+		return Blockly.DELETE_AREA_TRASH;
+	}
+	/*if (this.deleteAreaToolbox_ && this.deleteAreaToolbox_.contains(xy)) {
+		return Blockly.DELETE_AREA_TOOLBOX;
+	}*/
+	return Blockly.DELETE_AREA_NONE;
+};
+

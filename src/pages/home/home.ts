@@ -7,6 +7,7 @@ import {JOINT_ID, MarsJointStatus} from "../../3d/mars.joint.mngr";
 import {AvatorFrames, AvatorKeyFrame, MarsJointAction, MarsMoveParam} from "../../3d/mars.joint.action";
 import {MarsRobotEmulator} from "../robot/mars.robot.emulator";
 import {MarsActSerials} from "../robot/mars.act.serials";
+import {DeviceUtility} from "../../utility/device.utility";
 
 declare const Blockly;
 declare const robot3D;
@@ -234,7 +235,7 @@ export class HomePage {
   }
 
   public playaction() {
-    var code = Blockly.JavaScript.workspaceToCode(this.workspace);
+    let code = Blockly.JavaScript.workspaceToCode(this.workspace);
     console.log(code);
 
     let engine = new RobotEngine(this.mars3DContext);
@@ -253,6 +254,12 @@ export class HomePage {
     if ((this.mars3DContext) && (this.currentJoint != JOINT_ID.JOINT_ID_NONE)) {
       this.mars3DContext.bodyMngr.rotateJoint2Angle(this.currentJoint,this.targetAngle);
     }
+  }
+
+  public playDevice() {
+    let code = Blockly.JavaScript.workspaceToCode(this.workspace);
+    let deviceUtility = new DeviceUtility("http://192.168.86.101:3000/", code);
+    deviceUtility.uploadDataToServer("runcode.rs", "text/plain", null, null);
   }
 
   public resetaction() {

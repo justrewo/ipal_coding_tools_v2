@@ -63,7 +63,7 @@ export class MarsSceneMngr {
     scene.add(light);
 
     let camera = new THREE.PerspectiveCamera(60.0, 400 / 400, 0.1, 10000.0);
-    camera.position.set(-17.9,1020,1514);
+    camera.position.set(0,2,5);
     camera.quaternion.set(-0.2920,  -0.005653,  -0.0017266, 0.95637);
     scene.add(camera);
 
@@ -74,11 +74,10 @@ export class MarsSceneMngr {
 
 
     let root = new THREE.Group();
+
     scene.add(root);
-    //root.position.set(0, -100, 0);
-    root.position.set(0, -98, 0);
-    //root.scale.set(0.1,0.1,0.1);
-    root.scale.set(1,1,1);
+    root.position.set(0, 0, 0);
+    root.scale.set(0.0025,0.0025,0.0025);
 
     let rayCast = new THREE.Raycaster();
 
@@ -101,11 +100,9 @@ export class MarsSceneMngr {
     this.renderer.domElement.addEventListener("click",this.onMouseClick.bind(this),false);
 
     this.initPhysics();
-    this.initInput();
-    this.createFloor2();
 
-    //this.createObjects();
-    this.createObjects2();
+    this.loadDemoScene_02();
+
 
     return;
   }
@@ -116,7 +113,7 @@ export class MarsSceneMngr {
     let quat = new THREE.Quaternion();
 
     // Ground
-    pos.set( 0, - 100, 0 );
+    pos.set( 0, 1, 0 );
     quat.set( 0, 0, 0, 1 );
 
     let ground = this.createParalellepiped(8000,
@@ -316,7 +313,6 @@ export class MarsSceneMngr {
     let that = this;
 
     if (mars3dContext != null) {
-
       if (mars3dContext.attachNode.parent != this.root) {
         this.root.add(mars3dContext.attachNode);
       }
@@ -449,10 +445,7 @@ export class MarsSceneMngr {
     let broadphase = new Ammo.btDbvtBroadphase();
     let solver = new Ammo.btSequentialImpulseConstraintSolver();
     this.physicsWorld = new Ammo.btDiscreteDynamicsWorld( dispatcher, broadphase, solver, collisionConfiguration );
-    //this.physicsWorld = new Ammo.btSoftRigidDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-    this.physicsWorld.setGravity(new Ammo.btVector3(0, -37.8 * 10, 0));
-
-    //this.physicsWorld.getWorldInfo().set_m_gravity(new Ammo.btVector3(0, -37.9, 0));
+    this.physicsWorld.setGravity(new Ammo.btVector3(0, -9.8, 0));
   }
 
 
@@ -520,6 +513,7 @@ export class MarsSceneMngr {
     }
   }
 
+
   private  initInput() {
     let that = this;
     let pos = new THREE.Vector3();
@@ -533,8 +527,8 @@ export class MarsSceneMngr {
       that.mouseCoords.set((event.clientX / window.innerWidth ) * 2 - 1, -(event.clientY / window.innerHeight ) * 2 + 1);
       that.raycast.setFromCamera(that.mouseCoords, that.camera);
 
-      let ballMass = 500;
-      let ballRadius =15 * 3;
+      let ballMass = 5;
+      let ballRadius =0.1;
       let ball = new THREE.Mesh( new THREE.SphereGeometry( ballRadius, 14, 10 ), that.ballMaterial );
 
       ball.castShadow = true;
@@ -551,7 +545,7 @@ export class MarsSceneMngr {
       let ballBody = that.createRigidBody(ball, ballShape, ballMass, pos, quat,null,null );
 
       pos.copy( that.raycast.ray.direction );
-      pos.multiplyScalar( 100 * 10 );
+      pos.multiplyScalar( 5 * 2 );
       let tmp_vect = new Ammo.btVector3( pos.x, pos.y, pos.z);
       ballBody.setLinearVelocity(tmp_vect);
       Ammo.destroy(tmp_vect);
@@ -568,8 +562,8 @@ export class MarsSceneMngr {
     that.mouseCoords.set(0, 0);
     that.raycast.setFromCamera(that.mouseCoords, that.camera);
 
-    let ballMass = 500;
-    let ballRadius =15 * 3;
+    let ballMass = 5;
+    let ballRadius = 0.1;
     let ball = new THREE.Mesh( new THREE.SphereGeometry( ballRadius, 14, 10 ), that.ballMaterial );
 
     ball.castShadow = true;
@@ -586,7 +580,7 @@ export class MarsSceneMngr {
     let ballBody = that.createRigidBody(ball, ballShape, ballMass, pos, quat,null,null );
 
     pos.copy( that.raycast.ray.direction );
-    pos.multiplyScalar( 100 * 10 * 2);
+    pos.multiplyScalar( 5 * 2);
     let tmp_vect = new Ammo.btVector3( pos.x, pos.y, pos.z);
     ballBody.setLinearVelocity(tmp_vect);
     Ammo.destroy(tmp_vect);
@@ -635,7 +629,10 @@ export class MarsSceneMngr {
     object.userData.physicsBody = body;
     object.userData.collided = false;
 
-    this.scene.add(object);
+    if (object.parent == null) {
+      this.scene.add(object);
+    }
+
 
     if (mass > 0) {
       this.rigidBodies.push(object);
@@ -686,6 +683,8 @@ export class MarsSceneMngr {
 
 
   public createTriangleMeshShapFromThreeMesh(meshObj:any):any {
+    let tmp_scale = meshObj.getWorldScale();
+
     let _vec3_1 = new Ammo.btVector3(0,0,0);
     let _vec3_2 = new Ammo.btVector3(0,0,0);
     let _vec3_3 = new Ammo.btVector3(0,0,0);
@@ -707,20 +706,20 @@ export class MarsSceneMngr {
       let face = gemotry.faces[index];
       if (face instanceof THREE.Face3) {
         triangles.push([
-          { x: vertices[face.a].x, y: vertices[face.a].y, z: vertices[face.a].z },
-          { x: vertices[face.b].x, y: vertices[face.b].y, z: vertices[face.b].z },
-          { x: vertices[face.c].x, y: vertices[face.c].y, z: vertices[face.c].z }
+          { x: vertices[face.a].x * tmp_scale.x, y: vertices[face.a].y * tmp_scale.y, z: vertices[face.a].z * tmp_scale.z},
+          { x: vertices[face.b].x * tmp_scale.x, y: vertices[face.b].y * tmp_scale.y, z: vertices[face.b].z * tmp_scale.z},
+          { x: vertices[face.c].x * tmp_scale.x, y: vertices[face.c].y * tmp_scale.y, z: vertices[face.c].z * tmp_scale.z}
         ]);
       } else if (face instanceof THREE.Face4) {
         triangles.push([
-          { x: vertices[face.a].x, y: vertices[face.a].y, z: vertices[face.a].z },
-          { x: vertices[face.b].x, y: vertices[face.b].y, z: vertices[face.b].z },
-          { x: vertices[face.d].x, y: vertices[face.d].y, z: vertices[face.d].z }
+          { x: vertices[face.a].x * tmp_scale.x, y: vertices[face.a].y * tmp_scale.y, z: vertices[face.a].z * tmp_scale.z },
+          { x: vertices[face.b].x * tmp_scale.x, y: vertices[face.b].y * tmp_scale.y, z: vertices[face.b].z * tmp_scale.z },
+          { x: vertices[face.d].x * tmp_scale.x, y: vertices[face.d].y * tmp_scale.y, z: vertices[face.d].z * tmp_scale.z }
         ]);
         triangles.push([
-          { x: vertices[face.b].x, y: vertices[face.b].y, z: vertices[face.b].z },
-          { x: vertices[face.c].x, y: vertices[face.c].y, z: vertices[face.c].z },
-          { x: vertices[face.d].x, y: vertices[face.d].y, z: vertices[face.d].z }
+          { x: vertices[face.b].x * tmp_scale.x, y: vertices[face.b].y * tmp_scale.y, z: vertices[face.b].z * tmp_scale.z },
+          { x: vertices[face.c].x * tmp_scale.x, y: vertices[face.c].y * tmp_scale.y, z: vertices[face.c].z * tmp_scale.z},
+          { x: vertices[face.d].x * tmp_scale.x, y: vertices[face.d].y * tmp_scale.y, z: vertices[face.d].z * tmp_scale.z }
         ]);
       }
     }
@@ -750,12 +749,16 @@ export class MarsSceneMngr {
 
 
   private initBodyPhysics():any {
+
     let that = this;
+
+    this.bodyMngr.initBodyShape();
 
     let bodyPartList = this.bodyMngr.getAllBodyPartList();
     bodyPartList.forEach(function (body) {
       that.initPhysicsForBodyPart(body);
     });
+
   }
 
 
@@ -786,23 +789,23 @@ export class MarsSceneMngr {
     return new THREE.MeshPhongMaterial( { color: this.createRandomColor() } );
   }
 
-  private createObjects2() {
+  private createObjects() {
     let pos = new THREE.Vector3();
     let quat = new THREE.Quaternion();
 
     // Wall
-    let brickMass = 100;
+    let brickMass = 1 ;
 
-    let brickLength = 300;
-    let brickDepth = 40;
+    let brickLength = 1;
+    let brickDepth = 1
 
     let brickHeight = brickLength * 0.5;
-    let numBricksLength = 5;
-    let numBricksHeight = 5;
-    let z0 =  -700;//- numBricksLength * brickLength * 0.5;
+    let numBricksLength = 2;
+    let numBricksHeight = 2;
+    let z0 =  0;//- numBricksLength * brickLength * 0.5;
     //pos.set( 0, brickHeight * 0.5, z0 );
 
-    pos.set( -1000, -50, z0 );
+    pos.set( -4, 0, z0 );
     quat.set( 0, 0, 0, 1 );
 
     for ( let j = 0; j < numBricksHeight; j ++ ) {
@@ -836,10 +839,10 @@ export class MarsSceneMngr {
       pos.y += brickHeight;
     }
 
-    z0 =  -700;//- numBricksLength * brickLength * 0.5;
+    z0 =  0;//- numBricksLength * brickLength * 0.5;
     //pos.set( 0, brickHeight * 0.5, z0 );
 
-    pos.set( 1000, -50, z0 );
+    pos.set( 2, 0, z0 );
     quat.set( 0, 0, 0, 1 );
 
     for ( let j = 0; j < numBricksHeight; j ++ ) {
@@ -878,32 +881,6 @@ export class MarsSceneMngr {
 
 
   }
-
-
-  public createObjects() {
-    let pos = new THREE.Vector3();
-    let quat = new THREE.Quaternion();
-
-     // Create soft volumes
-    let volumeMass = 15;
-
-    let sphereGeometry = new THREE.SphereBufferGeometry( 140, 40, 25 );
-    sphereGeometry.translate( 5, 80, 0 );
-    this.createSoftVolume( sphereGeometry, volumeMass, 250 );
-
-    let boxGeometry = new THREE.BufferGeometry().fromGeometry( new THREE.BoxGeometry( 100, 100, 5, 4, 4, 100 ) );
-    boxGeometry.translate( -2, 30, 0 );
-    this.createSoftVolume( boxGeometry, volumeMass, 120 );
-
-    // Ramp
-    pos.set( 3, 1, 0 );
-    quat.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), 30 * Math.PI / 180 );
-    let obstacle = this.createParalellepiped( 10, 1, 4, 0, pos, quat, new THREE.MeshPhongMaterial( { color: 0x606060 } ) );
-    obstacle.castShadow = true;
-    obstacle.receiveShadow = true;
-
-  }
-
 
 
   private createSoftVolume( bufferGeom, mass, pressure ) {
@@ -1052,4 +1029,188 @@ export class MarsSceneMngr {
       Math.abs( z2 - z1 ) < delta;
   }
 
+
+
+  //场景加载
+  private loadDemoScene_01():void {
+    this.initInput();
+    this.createFloor2();
+    this.createObjects();
+
+
+  }
+
+
+  private loadDemoScene_02():void {
+    let that = this;
+
+    this.createFloorForScene_02();
+
+    this.initInput();
+
+    let loader1 = new THREE.AssimpJSONLoader();
+
+    loader1.load( './assets/model/assimp/jeep/jeep.assimp.json', function ( object ) {
+      let mesh = object.children[0];
+
+      mesh.scale.multiplyScalar(0.2);
+      mesh.position.set(5, 0, 0);
+      that.scene.add(mesh);
+
+      setTimeout(()=>{
+        let shape = that.createTriangleMeshShapFromThreeMesh_scale(mesh);
+          that.createRigidBody(mesh,shape,10,null,null,null,null);
+      },100);
+
+    });
+
+
+    let loader2 = new THREE.AssimpJSONLoader();
+    loader2.load( './assets/model/assimp/interior/interior.assimp.json', function ( object ) {
+      object.scale.multiplyScalar(1);
+      that.scene.add(object);
+      setTimeout(()=>{that.imPortEnviromenCompotForScene_02(object)},100);
+
+    });
+
+    this.createObjects();
+
+
+/*
+    let loader3 =  new THREE.SEA3D( {
+        container : this.scene // Container to add models
+    });
+
+
+    loader3.onComplete = function( e ) {
+      console.log(loader3);
+
+    };
+
+    loader3.load("./assets/model/sea3d/car.tjs.sea")
+    */
+
+
+
+  }
+
+
+  private imPortEnviromenCompotForScene_02(object3D:any) {
+    let that = this;
+
+    if (object3D.isMesh) {
+      let tmp_shape = this.createTriangleMeshShapFromThreeMesh_scale(object3D);
+      that.createStaticRigidBody(object3D,tmp_shape);
+
+
+    }
+
+    object3D.children.forEach(function (item) {
+      that.imPortEnviromenCompotForScene_02(item);
+
+    });
+  }
+
+
+  private createTriangleMeshShapFromThreeMesh_scale(meshObj:any):any {
+    let tmp_scale = meshObj.getWorldScale();
+
+    let _vec3_1 = new Ammo.btVector3(0,0,0);
+    let _vec3_2 = new Ammo.btVector3(0,0,0);
+    let _vec3_3 = new Ammo.btVector3(0,0,0);
+
+    let gemotry:any = null;
+
+    let tmp_bufferGeometry:any = meshObj.geometry;
+    if ((tmp_bufferGeometry.isBufferGeometry)) {
+      gemotry = new THREE.Geometry().fromBufferGeometry(tmp_bufferGeometry);
+
+    } else {
+      return null;
+    }
+
+    let vertices = gemotry.vertices;
+    let triangles = [];
+
+    for (let index = 0; index < gemotry.faces.length; index ++) {
+      let face = gemotry.faces[index];
+      if (face instanceof THREE.Face3) {
+        triangles.push([
+          { x: vertices[face.a].x * tmp_scale.x, y: vertices[face.a].y * tmp_scale.y, z: vertices[face.a].z * tmp_scale.z},
+          { x: vertices[face.b].x * tmp_scale.x, y: vertices[face.b].y * tmp_scale.y, z: vertices[face.b].z * tmp_scale.z},
+          { x: vertices[face.c].x * tmp_scale.x, y: vertices[face.c].y * tmp_scale.y, z: vertices[face.c].z * tmp_scale.z }
+        ]);
+      } else if (face instanceof THREE.Face4) {
+        triangles.push([
+          { x: vertices[face.a].x * tmp_scale.x, y: vertices[face.a].y * tmp_scale.y, z: vertices[face.a].z * tmp_scale.z },
+          { x: vertices[face.b].x * tmp_scale.x, y: vertices[face.b].y * tmp_scale.y, z: vertices[face.b].z * tmp_scale.z },
+          { x: vertices[face.d].x * tmp_scale.x, y: vertices[face.d].y * tmp_scale.y, z: vertices[face.d].z * tmp_scale.z }
+        ]);
+        triangles.push([
+          { x: vertices[face.b].x * tmp_scale.x, y: vertices[face.b].y * tmp_scale.y, z: vertices[face.b].z * tmp_scale.z },
+          { x: vertices[face.c].x * tmp_scale.x, y: vertices[face.c].y * tmp_scale.y, z: vertices[face.c].z * tmp_scale.z },
+          { x: vertices[face.d].x * tmp_scale.x, y: vertices[face.d].y * tmp_scale.y, z: vertices[face.d].z * tmp_scale.z }
+        ]);
+      }
+    }
+
+    let triangle_mesh = new Ammo.btTriangleMesh;
+    for (let index = 0; index < triangles.length; index ++) {
+      let triangle = triangles[index];
+
+      _vec3_1.setX(triangle[0].x);
+      _vec3_1.setY(triangle[0].y);
+      _vec3_1.setZ(triangle[0].z);
+
+      _vec3_2.setX(triangle[1].x);
+      _vec3_2.setY(triangle[1].y);
+      _vec3_2.setZ(triangle[1].z);
+
+      _vec3_3.setX(triangle[2].x);
+      _vec3_3.setY(triangle[2].y);
+      _vec3_3.setZ(triangle[2].z);
+
+      triangle_mesh.addTriangle(_vec3_1,_vec3_2,_vec3_3, true);
+    }
+
+    let shape = new Ammo.btBvhTriangleMeshShape(triangle_mesh,true,true);
+    return shape;
+  }
+
+
+  private createFloorForScene_02():void {
+    let pos = new THREE.Vector3();
+    let quat = new THREE.Quaternion();
+
+    // Ground
+    pos.set( 0, -0.02, 0 );
+    quat.set( 0, 0, 0, 1 );
+
+    let ground = this.createParalellepiped(20,
+      0.1,
+      20,
+      0,
+      pos,
+      quat,
+      new THREE.MeshPhongMaterial( { color: 0xFFFFFF }));
+
+    ground.castShadow = true;
+    ground.receiveShadow = true;
+
+    let loader:any = new THREE.TextureLoader();
+    loader.load("./assets/model/hardwood2_diffuse.jpg",
+      function(texture) {
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.anisotropy = 4;
+        texture.repeat.set(5, 12);
+
+        ground.material.map = texture;
+        ground.material.needsUpdate = true;
+      });
+  }
+
+
+  public getMapDistance(dist_value:number) {
+    return dist_value / this.root.getWorldScale().z;
+  }
 }

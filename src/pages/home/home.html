@@ -13,8 +13,8 @@
   </style>
   <div no-margin no-padding style="display: flex;flex-direction: row;width: 100%;height: 100%">
    <!-- blockly area -->
-   <div no-margin no-padding style="display: flex;height: 100%;width: 70%;background-color: #2ec95c">
-    <div style="flex-direction:column; flex-grow: 0; height: 100%; width:100px; background: #888888; display: flex;" id="blocklyCategory">
+   <div no-margin no-padding style="display: flex;height: 100%;width: 50%;background-color: #2ec95c">
+    <div style="flex-direction:column; flex-grow: 0; height: 100%; width:100px; background: #ffffff; display: flex;" id="blocklyCategory">
       <div class="blkDiv">
         <input class="blkToolCat" type="image" src="assets/imgs/category/tool_head.png" id="head" (click)="setToolboxCategory(0)"/>
       </div>
@@ -48,6 +48,8 @@
                (click)="playaction()" (mousedown)="highlightbuttion('play')" (mouseup)="resetbuttion('play')"/>
         <input style="width: 40px;" type="image" id="topMenuSave" src="assets/imgs/menu/save.png"
                (click)="resetaction()" (mousedown)="highlightbuttion('save')" (mouseup)="resetbuttion('save')"/>
+        <input style="width: 40px;" type="image" id="topMenuSave" src="assets/imgs/menu/play.png"
+               (click)="playDevice()" (mousedown)="highlightbuttion('play')" (mouseup)="resetbuttion('play')"/>
       </div>
     </div>
     <div #blocklyMenu style="visibility: hidden"></div>

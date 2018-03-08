@@ -6,7 +6,7 @@
   </div>
 
   <div [style.visibility]= "isLoaded()?'visible':'hidden'" style="width: 100%;height: 100%;background-color: transparent">
-    <section no-margin no-padding id="homeRobotContainer" style="width: 100%;height: 100%">
+    <section no-margin no-padding id="homeRobotContainer" style="width: 100%;height: 100%;overflow: hidden">
       <mars-model-viewer [mars3DContext]="three3DContext" [orbitEnable]="true">
       </mars-model-viewer>
     </section>

@@ -523,13 +523,16 @@ export class MarsBodyMngr {
       that.bodyRoot.add(item.attatchNode);
     });
 
+    return;
+  }
 
+
+  public initBodyShape() {
+    let that = this;
     //创建各个部分的PhysicsShape;
     this.bodyParts.forEach(function (bodyPart) {
       that.makePhysicsShape(bodyPart);
     });
-
-    return;
   }
 
 
@@ -675,7 +678,9 @@ export class MarsBodyMngr {
         }
       } else {
         let moveParam:MarsMoveParam = item.contextParam;
-        if (Math.abs(moveParam.targetDistance - moveParam.currentDistance) > 0.0001) {
+        let dist_in_world = that.sceneMngr.getMapDistance(moveParam.targetDistance);
+
+        if (Math.abs(dist_in_world - moveParam.currentDistance) > 0.0001) {
           finished = false;
         }
       }
@@ -716,11 +721,11 @@ export class MarsBodyMngr {
     } else {
       let moveParam:MarsMoveParam = jointAction.contextParam;
       let dist_delta = moveParam.moveRate * delta;
+      let dist_in_world = this.sceneMngr.getMapDistance(moveParam.targetDistance);
 
-      if ((moveParam.currentDistance + dist_delta) > moveParam.targetDistance) {
-        dist_delta = moveParam.targetDistance - moveParam.currentDistance;
+      if ((moveParam.currentDistance + dist_delta) > dist_in_world ) {
+        dist_delta =dist_in_world - moveParam.currentDistance;
       }
-
       moveParam.currentDistance = moveParam.currentDistance + dist_delta;
       this.moveForward(dist_delta);
      }
@@ -819,9 +824,7 @@ export class MarsBodyMngr {
 
   public updateAllBodyPartsPhysics() {
     //更新所有部分的物理位置
-
     let that = this;
-
     this.bodyParts.forEach(function (bodyPart) {
       that.updateBodyPartPhysicsPosition(bodyPart);
     });
@@ -841,7 +844,7 @@ export class MarsBodyMngr {
 
           let transform = new Ammo.btTransform();
           let vect = new Ammo.btVector3(pos.x, pos.y, pos.z);
-          let qua = new Ammo.btQuaternion( quat.x, quat.y, quat.z, quat.w);
+          let qua = new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w);
 
           transform.setIdentity();
           transform.setOrigin(vect);
